@@ -1,0 +1,22 @@
+<!-- 伪NFC检测 + 触屏备用方案 -->
+<script>
+    if ('ontouchstart' in window) {
+      // 触摸屏幕3秒模拟NFC触发（兼容所有手机）
+      let touchTimer;
+      document.addEventListener('touchstart', () => {
+        touchTimer = setTimeout(showNFCMimic, 3000)
+      })
+      document.addEventListener('touchend', () => clearTimeout(touchTimer))
+    }
+    
+    function showNFCMimic() {
+      // 伪NFC读取动画
+      document.body.innerHTML = `
+        <div class="nfc-scan">
+          <img src="banana-nfc.gif"> <!-- 香蕉造型的加载动画 -->
+          <p>正在扫描攀岩安全锁...</p>
+        </div>
+      `;
+      startTrolling(); // 进入整蛊主程序
+    }
+    </script>
