@@ -4,6 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>香蕉攀岩大冒险</title>
+    <script>
+        // 点击触发函数
+        function triggerSlide(rock) {
+          rock.classList.add('active');
+          
+          // 动画结束后重置状态
+          setTimeout(() => {
+            rock.classList.remove('active');
+          }, 3000); // 与动画持续时间一致
+          
+          // 手机触感反馈（可选）
+          if(navigator.vibrate) navigator.vibrate(50);
+        }
+        
+        // 移动端触摸支持
+        document.querySelectorAll('.rock').forEach(rock => {
+          rock.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // 阻止默认滚动行为
+            triggerSlide(this);
+          });
+        });
+    </script>
     <style>
         /* 基础样式 */
         body {
@@ -42,7 +64,8 @@
         .rock:nth-child(4) { left: 65%; top: 85% }
 
         /* 悬停时变成香蕉皮 */
-        .rock:hover {
+        .rock:hover,
+        .rock.active {
             background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23FFD700" d="M30 80Q40 20 70 50L75 55Q45 25 30 80z"/></svg>');
             transform: rotate(180deg) scale(1.5);
         }
@@ -54,7 +77,8 @@
         }
 
         /* 触发滑坡效果 */
-        .rock:hover ~ .climber {
+        .rock:hover ~ .climber,
+        .rock.active ~ .climber {
             animation: slide 3s forwards;
             filter: hue-rotate(90deg);
         }
@@ -71,7 +95,8 @@
             transform: scale(0);
             transition: all 1s;
         }
-        .rock:hover ~ .warning {
+        .rock:hover ~ .warning,
+        .rock.active ~ .warning {
             opacity: 1;
             transform: scale(1.5) rotate(-10deg);
             text-shadow: 2px 2px yellow;
@@ -95,10 +120,10 @@
     </style>
 </head>
 <body>
-    <div class="rock"></div>
-    <div class="rock"></div>
-    <div class="rock"></div>
-    <div class="rock"></div>
+    <div class="rock" onclick="triggerSlide(this)"></div>
+    <div class="rock" onclick="triggerSlide(this)"></div>
+    <div class="rock" onclick="triggerSlide(this)"></div>
+    <div class="rock" onclick="triggerSlide(this)"></div>
     
     <div class="climber"></div>
     <div class="warning">警告！岩点变香蕉皮！</div>
