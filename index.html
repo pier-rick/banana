@@ -117,6 +117,16 @@
             animation-delay: calc(var(--i) * 0.1s);
             left: calc(var(--i) * 10%);
         }
+        /* 移除点击高光 */
+        .rock {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation; /* 优化触控响应 */
+        }
+
+        /* 延长active状态持续时间 */
+        .rock:active {
+        transition: all 1s; /* 延长反馈时间 */
+        }
     </style>
 </head>
 <body>
