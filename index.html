@@ -7,15 +7,22 @@
     <script>
         // 点击触发函数
         function triggerSlide(rock) {
-          rock.classList.add('active');
-          
-          // 动画结束后重置状态
-          setTimeout(() => {
-            rock.classList.remove('active');
-          }, 1000); // 与动画持续时间一致
-          
-          // 手机触感反馈（可选）
-          if(navigator.vibrate) navigator.vibrate(50);
+            // 重置之前的状态
+            document.querySelectorAll('.rock, .climber').forEach(el => {
+                el.classList.remove('active');
+                el.style.animation = 'none';
+            });
+
+            // 强制重绘
+            void rock.offsetWidth;
+            
+            rock.classList.add('active');
+            
+            // 添加动画结束监听
+            document.querySelector('.climber').addEventListener('animationend', () => {
+                rock.classList.remove('active');
+                document.querySelector('.climber').style.animation = '';
+            }, {once: true});
         }
         
         // 移动端触摸支持
@@ -47,6 +54,8 @@
             content: '🧗';
             font-size: 3rem;
             display: block;
+            transform: translateY(0) rotate(0deg);
+            filter: hue-rotate(0deg);
         }
 
         /* 岩点（初始状态） */
@@ -73,7 +82,7 @@
         /* 滑坡动画 */
         @keyframes slide {
             0% { transform: translateY(0); }
-            100% { transform: translateY(100vh) rotate(360deg); }
+            100% { transform: translateY(150%) rotate(360deg); }
         }
 
         /* 触发滑坡效果 */
