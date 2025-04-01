@@ -2,156 +2,123 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香蕉攀岩大冒险</title>
-    <script>
-        // 点击触发函数
-        function triggerSlide(rock) {
-            // 重置之前的状态
-            document.querySelectorAll('.rock, .climber').forEach(el => {
-                el.classList.remove('active');
-                el.style.animation = 'none';
-            });
-
-            // 强制重绘
-            void rock.offsetWidth;
-            
-            rock.classList.add('active');
-            
-            // 添加动画结束监听
-            document.querySelector('.climber').addEventListener('animationend', () => {
-                rock.classList.remove('active');
-                document.querySelector('.climber').style.animation = '';
-            }, {once: true});
-        }
-        
-        // 移动端触摸支持
-        document.querySelectorAll('.rock').forEach(rock => {
-          rock.addEventListener('touchstart', function(e) {
-            e.preventDefault(); // 阻止默认滚动行为
-            triggerSlide(this);
-          });
-        });
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>香蕉攀岩挑战赛 🍌</title>
     <style>
-        /* 基础样式 */
-        body {
+        * {
             margin: 0;
-            height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #88cc88;
+            font-family: Arial, sans-serif;
             overflow: hidden;
-            background: linear-gradient(#87CEEB, #E0FFFF);
-            cursor: pointer;
+            touch-action: none;
         }
 
-        /* 攀岩角色 */
-        .climber {
+        .container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 香蕉攀岩动画 */
+        .banana-climber {
             position: absolute;
-            left: 45%;
-            top: 30%;
-            transition: all 2s ease-in-out;
-        }
-        .climber::before {
-            content: '🧗';
-            font-size: 3rem;
-            display: block;
-            transform: translateY(0) rotate(0deg);
-            filter: hue-rotate(0deg);
+            left: 50%;
+            bottom: -50px;
+            width: 60px;
+            animation: climb 4s linear infinite;
+            transform: translateX(-50%);
+            z-index: 2;
         }
 
-        /* 岩点（初始状态） */
-        .rock {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: #808080;
-            border-radius: 50%;
-            transition: all 0.5s;
-        }
-        .rock:nth-child(1) { left: 20%; top: 40% }
-        .rock:nth-child(2) { left: 35%; top: 55% }
-        .rock:nth-child(3) { left: 50%; top: 70% }
-        .rock:nth-child(4) { left: 65%; top: 85% }
-
-        /* 悬停时变成香蕉皮 */
-        .rock:hover,
-        .rock.active {
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23FFD700" d="M30 80Q40 20 70 50L75 55Q45 25 30 80z"/></svg>');
-            transform: rotate(180deg) scale(1.5);
-        }
-
-        /* 滑坡动画 */
-        @keyframes slide {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(150%) rotate(360deg); }
-        }
-
-        /* 触发滑坡效果 */
-        .rock:hover ~ .climber,
-        .rock.active ~ .climber {
-            animation: slide 3s forwards;
-            filter: hue-rotate(90deg);
-        }
-
-        /* 警告标语 */
-        .warning {
-            position: fixed;
-            top: 20%;
+        .banana {
             width: 100%;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+            animation: swing 0.8s ease-in-out infinite alternate;
+        }
+
+        /* 攀岩绳 */
+        .rope {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #663300;
+            transform: translateX(-50%);
+        }
+
+        /* 抖动效果 */
+        .shake {
+            animation: shake 0.3s linear infinite;
+        }
+
+        /* 提示文本 */
+        .message {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
             text-align: center;
-            font-size: 2rem;
-            color: red;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 1.5em;
             opacity: 0;
-            transform: scale(0);
-            transition: all 1s;
-        }
-        .rock:hover ~ .warning,
-        .rock.active ~ .warning {
-            opacity: 1;
-            transform: scale(1.5) rotate(-10deg);
-            text-shadow: 2px 2px yellow;
+            transition: opacity 0.3s;
         }
 
-        /* 香蕉雨特效 */
-        .banana-rain::after {
-            content: '🍌';
-            position: fixed;
-            animation: rain 1s linear infinite;
-            opacity: 0;
-        }
-        @keyframes rain {
-            from { transform: translateY(-100px) rotate(0deg); }
-            to { transform: translateY(100vh) rotate(360deg); }
-        }
-        .rock:hover ~ .banana-rain::after {
-            animation-delay: calc(var(--i) * 0.1s);
-            left: calc(var(--i) * 10%);
-        }
-        /* 移除点击高光 */
-        .rock {
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation; /* 优化触控响应 */
+        @keyframes climb {
+            0% { bottom: -50px; }
+            100% { bottom: 120%; }
         }
 
-        /* 延长active状态持续时间 */
-        .rock:active {
-        transition: all 1s; /* 延长反馈时间 */
+        @keyframes swing {
+            from { transform: rotate(-10deg); }
+            to { transform: rotate(10deg); }
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            10% { transform: translate(-1px, -2px); }
+            20% { transform: translate(-3px, 0px); }
+            30% { transform: translate(3px, 2px); }
+            40% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 2px); }
+            60% { transform: translate(-3px, 1px); }
+            70% { transform: translate(3px, 1px); }
+            80% { transform: translate(-1px, -1px); }
+            90% { transform: translate(1px, 2px); }
+            100% { transform: translate(1px, -2px); }
         }
     </style>
 </head>
 <body>
-    <div class="rock" onclick="triggerSlide(this)"></div>
-    <div class="rock" onclick="triggerSlide(this)"></div>
-    <div class="rock" onclick="triggerSlide(this)"></div>
-    <div class="rock" onclick="triggerSlide(this)"></div>
-    
-    <div class="climber"></div>
-    <div class="warning">警告！岩点变香蕉皮！</div>
-    
-    <!-- 生成香蕉雨 -->
-    <div class="banana-rain" style="--i:1"></div>
-    <div class="banana-rain" style="--i:2"></div>
-    <div class="banana-rain" style="--i:3"></div>
-    <div class="banana-rain" style="--i:4"></div>
-    <div class="banana-rain" style="--i:5"></div>
+    <div class="container">
+        <div class="rope"></div>
+        <div class="message">你的手机已被香蕉占领！🍌</div>
+        <div class="banana-climber">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNNDAgMTBjLTEwIDAtMjAgNS0yNSAxNS0xMCAxNS0xMiAzNS01IDUwbDI1IDQ1IDMwLTIwLTEwLTQ1Yy01LTE1LTIwLTI1LTM1LTI1eiIgZmlsbD0iI2ZmZmYwMCIvPjxwYXRoIGQ9Ik00NSAxNWMtNSAwLTEwIDUtMTAgMTBsNSA0MCAxMC0zNSA1LTVjMC01LTUtMTAtMTAtMTB6IiBmaWxsPSIjZmY5ZTAwIi8+PC9zdmc+" class="banana">
+        </div>
+    </div>
+
+    <script>
+        // 点击页面触发抖动效果
+        document.addEventListener('click', function() {
+            document.body.classList.add('shake');
+            document.querySelector('.message').style.opacity = 1;
+            
+            setTimeout(() => {
+                document.body.classList.remove('shake');
+                document.querySelector('.message').style.opacity = 0;
+            }, 2000);
+        });
+
+        // 防止下拉刷新
+        document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+    </script>
 </body>
 </html>

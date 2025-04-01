@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香蕉攀岩大冒险</title>
+    <script>
+        // 点击触发函数
+        function triggerSlide(rock) {
+            // 重置之前的状态
+            document.querySelectorAll('.rock, .climber').forEach(el => {
+                el.classList.remove('active');
+                el.style.animation = 'none';
+            });
+
+            // 强制重绘
+            void rock.offsetWidth;
+            
+            rock.classList.add('active');
+            
+            // 添加动画结束监听
+            document.querySelector('.climber').addEventListener('animationend', () => {
+                rock.classList.remove('active');
+                document.querySelector('.climber').style.animation = '';
+            }, {once: true});
+        }
+        
+        // 移动端触摸支持
+        document.querySelectorAll('.rock').forEach(rock => {
+          rock.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // 阻止默认滚动行为
+            triggerSlide(this);
+          });
+        });
+    </script>
+    <style>
+        /* 基础样式 */
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(#87CEEB, #E0FFFF);
+            cursor: pointer;
+        }
+
+        /* 攀岩角色 */
+        .climber {
+            position: absolute;
+            left: 45%;
+            top: 30%;
+            transition: all 2s ease-in-out;
+        }
+        .climber::before {
+            content: '🧗';
+            font-size: 3rem;
+            display: block;
+            transform: translateY(0) rotate(0deg);
+            filter: hue-rotate(0deg);
+        }
+
+        /* 岩点（初始状态） */
+        .rock {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #808080;
+            border-radius: 50%;
+            transition: all 0.5s;
+        }
+        .rock:nth-child(1) { left: 20%; top: 40% }
+        .rock:nth-child(2) { left: 35%; top: 55% }
+        .rock:nth-child(3) { left: 50%; top: 70% }
+        .rock:nth-child(4) { left: 65%; top: 85% }
+
+        /* 悬停时变成香蕉皮 */
+        .rock:hover,
+        .rock.active {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23FFD700" d="M30 80Q40 20 70 50L75 55Q45 25 30 80z"/></svg>');
+            transform: rotate(180deg) scale(1.5);
+        }
+
+        /* 滑坡动画 */
+        @keyframes slide {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(150%) rotate(360deg); }
+        }
+
+        /* 触发滑坡效果 */
+        .rock:hover ~ .climber,
+        .rock.active ~ .climber {
+            animation: slide 3s forwards;
+            filter: hue-rotate(90deg);
+        }
+
+        /* 警告标语 */
+        .warning {
+            position: fixed;
+            top: 20%;
+            width: 100%;
+            text-align: center;
+            font-size: 2rem;
+            color: red;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 1s;
+        }
+        .rock:hover ~ .warning,
+        .rock.active ~ .warning {
+            opacity: 1;
+            transform: scale(1.5) rotate(-10deg);
+            text-shadow: 2px 2px yellow;
+        }
+
+        /* 香蕉雨特效 */
+        .banana-rain::after {
+            content: '🍌';
+            position: fixed;
+            animation: rain 1s linear infinite;
+            opacity: 0;
+        }
+        @keyframes rain {
+            from { transform: translateY(-100px) rotate(0deg); }
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        .rock:hover ~ .banana-rain::after {
+            animation-delay: calc(var(--i) * 0.1s);
+            left: calc(var(--i) * 10%);
+        }
+        /* 移除点击高光 */
+        .rock {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation; /* 优化触控响应 */
+        }
+
+        /* 延长active状态持续时间 */
+        .rock:active {
+        transition: all 1s; /* 延长反馈时间 */
+        }
+    </style>
+</head>
+<body>
+    <div class="rock" onclick="triggerSlide(this)"></div>
+    <div class="rock" onclick="triggerSlide(this)"></div>
+    <div class="rock" onclick="triggerSlide(this)"></div>
+    <div class="rock" onclick="triggerSlide(this)"></div>
+    
+    <div class="climber"></div>
+    <div class="warning">警告！岩点变香蕉皮！</div>
+    
+    <!-- 生成香蕉雨 -->
+    <div class="banana-rain" style="--i:1"></div>
+    <div class="banana-rain" style="--i:2"></div>
+    <div class="banana-rain" style="--i:3"></div>
+    <div class="banana-rain" style="--i:4"></div>
+    <div class="banana-rain" style="--i:5"></div>
+</body>
+</html>
